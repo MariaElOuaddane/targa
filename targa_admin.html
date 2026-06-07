@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TARGA — Administration</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --terracotta: #B5451B;
+  --terracotta-deep: #8B2E0D;
+  --gold: #D4A843;
+  --gold-light: #E8C87A;
+  --ivory: #FAF6EE;
+  --parchment: #F2EAD8;
+  --dark: #1E0E05;
+  --ink: #2B1206;
+  --olive: #6B7B3A;
+  --teal: #2E6B6B;
+  --purple: #7B3A7B;
+  --admin-bg: #F7F3EC;
+  --panel: #FFFFFF;
+  --border: rgba(181,69,27,0.15);
+  --text-muted: #7a6050;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'IM Fell English',Georgia,serif;background:var(--admin-bg);color:var(--ink);display:flex;min-height:100vh;}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:240px;background:var(--dark);border-right:3px solid var(--gold);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:1.4rem 1.2rem;border-bottom:1px solid rgba(212,168,67,0.2);text-align:center;}
+.sidebar-logo-text{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--gold-light);letter-spacing:0.1em;}
+.sidebar-logo-sub{font-size:0.55rem;color:var(--terracotta);letter-spacing:0.25em;text-transform:uppercase;display:block;margin-top:2px;}
+.sidebar-badge{display:inline-block;background:var(--terracotta);color:white;font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.1em;padding:0.15rem 0.5rem;border-radius:2px;margin-top:6px;text-transform:uppercase;}
+.sidebar-section{font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(250,246,238,0.3);padding:1rem 1.2rem 0.4rem;}
+.nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.7rem 1.2rem;cursor:pointer;transition:all 0.2s;border-left:3px solid transparent;color:rgba(250,246,238,0.6);font-size:0.82rem;}
+.nav-item:hover{background:rgba(212,168,67,0.08);color:var(--gold-light);border-left-color:rgba(212,168,67,0.3);}
+.nav-item.active{background:rgba(181,69,27,0.15);color:var(--gold-light);border-left-color:var(--terracotta);}
+.nav-item .ico{font-size:1rem;flex-shrink:0;width:20px;text-align:center;}
+.nav-item .lbl{flex:1;}
+.nav-item .cnt{background:var(--terracotta);color:white;font-family:'Cinzel',serif;font-size:0.55rem;padding:0.15rem 0.45rem;border-radius:10px;}
+.sidebar-footer{margin-top:auto;padding:1.2rem;border-top:1px solid rgba(212,168,67,0.15);}
+.admin-user{display:flex;align-items:center;gap:0.6rem;}
+.admin-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--terracotta),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:0.8rem;color:white;font-weight:700;flex-shrink:0;}
+.admin-name{font-size:0.8rem;color:var(--gold-light);}
+.admin-role{font-size:0.6rem;color:rgba(250,246,238,0.4);font-family:'Cinzel',serif;letter-spacing:0.08em;}
+.btn-logout{display:block;text-align:center;width:100%;margin-top:0.8rem;background:none;border:1px solid rgba(212,168,67,0.2);color:rgba(250,246,238,0.4);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.45rem;border-radius:2px;cursor:pointer;transition:all 0.2s;}
+.btn-logout:hover{border-color:var(--terracotta);color:var(--terracotta);}
+
+/* ═══ MAIN ═══ */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:white;border-bottom:2px solid rgba(212,168,67,0.25);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(30,14,5,0.05);}
+.topbar-title{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:0.08em;color:var(--terracotta-deep);}
+.topbar-right{display:flex;align-items:center;gap:1rem;}
+.topbar-date{font-size:0.72rem;color:var(--text-muted);font-style:italic;}
+.btn-add{display:inline-flex;align-items:center;gap:0.4rem;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.1rem;background:var(--terracotta);color:white;border:none;border-radius:2px;cursor:pointer;transition:all 0.2s;}
+.btn-add:hover{background:var(--terracotta-deep);}
+
+/* ═══ CONTENT ═══ */
+.content{padding:2rem;flex:1;}
+.page-panel{display:none;}
+.page-panel.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ═══ STATS CARDS ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem;}
+.stat-card{background:white;border:1px solid var(--border);border-top:3px solid var(--terracotta);border-radius:3px;padding:1.4rem;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:var(--terracotta);opacity:0.04;border-radius:0 0 0 80px;}
+.stat-card.teal{border-top-color:var(--teal);}
+.stat-card.gold{border-top-color:var(--gold);}
+.stat-card.olive{border-top-color:var(--olive);}
+.stat-card.purple{border-top-color:var(--purple);}
+.stat-ico{font-size:1.8rem;margin-bottom:0.7rem;}
+.stat-val{font-family:'Cinzel',serif;font-size:2rem;font-weight:700;color:var(--ink);line-height:1;}
+.stat-lbl{font-size:0.72rem;color:var(--text-muted);margin-top:0.3rem;font-style:italic;}
+.stat-delta{font-size:0.68rem;margin-top:0.5rem;color:var(--olive);font-family:'Cinzel',serif;}
+
+/* ═══ SECTION TITLE ═══ */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.sec-hd h2{font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--terracotta-deep);}
+.zellij-line{height:4px;background:repeating-linear-gradient(90deg,var(--terracotta) 0,var(--terracotta) 6px,var(--gold) 6px,var(--gold) 12px,var(--terracotta-deep) 12px,var(--terracotta-deep) 18px,var(--gold-light) 18px,var(--gold-light) 24px);opacity:0.5;margin-bottom:1.5rem;}
+
+/* ═══ TABLE ═══ */
+.tbl-wrap{background:white;border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.tbl-toolbar{display:flex;align-items:center;gap:0.8rem;padding:1rem 1.2rem;border-bottom:1px solid var(--border);}
+.tbl-search{flex:1;background:var(--admin-bg);border:1px solid rgba(181,69,27,0.2);border-radius:2px;padding:0.5rem 0.8rem;font-family:'IM Fell English',serif;font-size:0.82rem;color:var(--ink);outline:none;}
+.tbl-search:focus{border-color:var(--gold);}
+.tbl-filter{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.08em;padding:0.45rem 0.8rem;background:transparent;border:1px solid rgba(181,69,27,0.2);border-radius:2px;cursor:pointer;color:var(--terracotta);transition:all 0.2s;}
+.tbl-filter:hover,.tbl-filter.on{background:var(--terracotta);color:white;border-color:var(--terracotta);}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--dark);}
+th{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-light);padding:0.8rem 1rem;text-align:left;font-weight:400;}
+td{padding:0.75rem 1rem;font-size:0.82rem;color:var(--ink);border-bottom:1px solid rgba(212,168,67,0.1);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(212,168,67,0.04);}
+.badge{display:inline-block;font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:0.1em;padding:0.2rem 0.6rem;border-radius:20px;text-transform:uppercase;}
+.badge-visiteur{background:rgba(46,107,107,0.1);color:var(--teal);border:1px solid rgba(46,107,107,0.25);}
+.badge-guide{background:rgba(212,168,67,0.1);color:#8B6500;border:1px solid rgba(212,168,67,0.3);}
+.badge-admin{background:rgba(123,58,123,0.1);color:var(--purple);border:1px solid rgba(123,58,123,0.25);}
+.badge-actif{background:rgba(107,123,58,0.1);color:var(--olive);border:1px solid rgba(107,123,58,0.25);}
+.badge-inactif{background:rgba(181,69,27,0.1);color:var(--terracotta);border:1px solid rgba(181,69,27,0.25);}
+.badge-certifie{background:rgba(46,107,107,0.12);color:var(--teal);}
+.badge-attente{background:rgba(212,168,67,0.12);color:#8B6500;}
+.badge-confirme{background:rgba(107,123,58,0.12);color:var(--olive);}
+.badge-annule{background:rgba(181,69,27,0.12);color:var(--terracotta);}
+
+/* Action buttons */
+.act-btns{display:flex;gap:0.4rem;}
+.btn-act{font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:0.08em;padding:0.25rem 0.6rem;border-radius:2px;border:none;cursor:pointer;transition:all 0.15s;text-transform:uppercase;}
+.btn-edit{background:rgba(212,168,67,0.12);color:#8B6500;border:1px solid rgba(212,168,67,0.3);}
+.btn-edit:hover{background:rgba(212,168,67,0.25);}
+.btn-del{background:rgba(181,69,27,0.1);color:var(--terracotta);border:1px solid rgba(181,69,27,0.25);}
+.btn-del:hover{background:var(--terracotta);color:white;}
+.btn-promote{background:rgba(123,58,123,0.1);color:var(--purple);border:1px solid rgba(123,58,123,0.25);}
+.btn-promote:hover{background:var(--purple);color:white;}
+.btn-certify{background:rgba(46,107,107,0.1);color:var(--teal);border:1px solid rgba(46,107,107,0.25);}
+.btn-certify:hover{background:var(--teal);color:white;}
+
+/* ═══ MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(30,14,5,0.55);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;animation:fadeIn 0.25s ease;}
+.modal{background:white;border:2px solid rgba(212,168,67,0.4);border-radius:4px;padding:2rem;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(30,14,5,0.2);}
+.modal-title{font-family:'Cinzel',serif;font-size:0.95rem;letter-spacing:0.1em;color:var(--terracotta-deep);margin-bottom:1.5rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(212,168,67,0.25);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:0.8rem;}
+.form-row.full{grid-template-columns:1fr;}
+.form-grp{display:flex;flex-direction:column;gap:0.3rem;}
+.form-lbl{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--terracotta);}
+.form-inp,.form-sel{background:var(--admin-bg);border:1px solid rgba(181,69,27,0.2);border-radius:2px;padding:0.6rem 0.8rem;font-family:'IM Fell English',serif;font-size:0.85rem;color:var(--ink);outline:none;width:100%;}
+.form-inp:focus,.form-sel:focus{border-color:var(--gold);}
+.modal-foot{display:flex;gap:0.6rem;justify-content:flex-end;margin-top:1.4rem;padding-top:1rem;border-top:1px solid rgba(212,168,67,0.2);}
+.btn-cancel{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1.4rem;background:none;border:1px solid rgba(181,69,27,0.2);color:var(--text-muted);border-radius:2px;cursor:pointer;}
+.btn-save{font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1.4rem;background:var(--terracotta);color:white;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;}
+.btn-save:hover{background:var(--terracotta-deep);}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--dark);color:var(--gold-light);border:1px solid var(--gold);font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.1em;padding:0.75rem 1.5rem;border-radius:3px;z-index:9999;opacity:0;transition:all 0.35s;pointer-events:none;}
+.toast.show{opacity:1;}
+
+/* ═══ GUIDE CARDS ═══ */
+.guides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;}
+.guide-admin-card{background:white;border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.guide-card-header{height:50px;background:linear-gradient(135deg,var(--terracotta-deep),var(--terracotta));display:flex;align-items:flex-end;padding:0 1rem 0.5rem;position:relative;}
+.guide-avatar-a{width:54px;height:54px;border-radius:50%;border:3px solid white;background:var(--parchment);display:flex;align-items:center;justify-content:center;font-size:1.5rem;position:absolute;bottom:-27px;left:1rem;box-shadow:0 2px 8px rgba(30,14,5,0.15);}
+.guide-card-body{padding:1.2rem 1rem 1rem;margin-top:1.8rem;}
+.guide-card-name{font-family:'Amiri',serif;font-size:1.05rem;font-weight:700;margin-bottom:0.15rem;}
+.guide-card-city{font-size:0.72rem;color:var(--terracotta);font-style:italic;margin-bottom:0.6rem;}
+.guide-card-stats{display:flex;gap:1rem;margin-bottom:0.8rem;}
+.gstat{text-align:center;}
+.gstat-val{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--ink);}
+.gstat-lbl{font-size:0.58rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;}
+.guide-card-acts{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.5rem;}
+
+/* ═══ TIMELINE / RECENT ═══ */
+.timeline{display:flex;flex-direction:column;gap:0;background:white;border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.tl-item{display:flex;gap:1rem;padding:0.9rem 1.2rem;border-bottom:1px solid rgba(212,168,67,0.1);align-items:flex-start;}
+.tl-item:last-child{border-bottom:none;}
+.tl-ico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.tl-body{flex:1;}
+.tl-text{font-size:0.8rem;color:var(--ink);line-height:1.5;}
+.tl-text strong{color:var(--terracotta-deep);}
+.tl-time{font-size:0.68rem;color:var(--text-muted);font-style:italic;margin-top:0.2rem;}
+
+/* Charts area */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2rem;}
+.chart-box{background:white;border:1px solid var(--border);border-radius:3px;padding:1.2rem;}
+.chart-title{font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--terracotta);margin-bottom:1rem;}
+.bar-chart{display:flex;flex-direction:column;gap:0.6rem;}
+.bar-row{display:flex;align-items:center;gap:0.8rem;}
+.bar-lbl{font-size:0.72rem;color:var(--ink);width:100px;flex-shrink:0;text-align:right;}
+.bar-track{flex:1;background:var(--admin-bg);border-radius:2px;height:18px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+.bar-val{font-family:'Cinzel',serif;font-size:0.68rem;color:var(--text-muted);width:45px;flex-shrink:0;}
+.donut-legend{display:flex;flex-direction:column;gap:0.5rem;margin-top:1rem;}
+.donut-item{display:flex;align-items:center;gap:0.6rem;font-size:0.78rem;}
+.donut-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1.2rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);}
+.page-btns{display:flex;gap:0.3rem;}
+.page-btn{font-family:'Cinzel',serif;font-size:0.58rem;padding:0.3rem 0.65rem;border-radius:2px;border:1px solid rgba(181,69,27,0.2);cursor:pointer;background:none;color:var(--terracotta);transition:all 0.15s;}
+.page-btn:hover,.page-btn.active{background:var(--terracotta);color:white;border-color:var(--terracotta);}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .main{margin-left:0;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .charts-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 200 90" xmlns="http://www.w3.org/2000/svg" style="width:56px;margin:0 auto 6px;display:block;">
+      <path d="M85 85 L85 48 Q85 20 100 20 Q115 20 115 48 L115 85 Z" fill="none" stroke="#D4A843" stroke-width="2.5"/>
+      <rect x="85" y="82" width="30" height="3.5" rx="1" fill="#C0622A"/>
+      <circle cx="100" cy="50" r="13" fill="#C0622A"/>
+      <circle cx="105" cy="46" r="10" fill="#1E0E05"/>
+      <polygon points="100,66 101.5,69.5 105,69.5 102.5,71.5 103.5,75 100,73 96.5,75 97.5,71.5 95,69.5 98.5,69.5" fill="#D4A843"/>
+    </svg>
+    <div class="sidebar-logo-text">TARGA</div>
+    <span class="sidebar-logo-sub">Travelling Morocco</span>
+    <span class="sidebar-badge">Administration</span>
+  </div>
+
+  <div class="sidebar-section">Tableau de bord</div>
+  <div class="nav-item active" onclick="goPage('dashboard',this)">
+    <span class="ico">📊</span><span class="lbl">Vue d'ensemble</span>
+  </div>
+
+  <div class="sidebar-section">Gestion utilisateurs</div>
+  <div class="nav-item" onclick="goPage('utilisateurs',this)">
+    <span class="ico">👤</span><span class="lbl">Utilisateurs</span><span class="cnt">247</span>
+  </div>
+  <div class="nav-item" onclick="goPage('guides',this)">
+    <span class="ico">🧭</span><span class="lbl">Guides</span><span class="cnt">8</span>
+  </div>
+
+  <div class="sidebar-section">Contenu</div>
+  <div class="nav-item" onclick="goPage('activites',this)">
+    <span class="ico">🎯</span><span class="lbl">Activités</span><span class="cnt">24</span>
+  </div>
+  <div class="nav-item" onclick="goPage('reservations',this)">
+    <span class="ico">📋</span><span class="lbl">Réservations</span><span class="cnt" style="background:var(--gold);color:var(--dark)">12</span>
+  </div>
+  <div class="nav-item" onclick="goPage('avis',this)">
+    <span class="ico">⭐</span><span class="lbl">Avis & Évaluations</span>
+  </div>
+
+  <div class="sidebar-section">Paramètres</div>
+  <div class="nav-item" onclick="goPage('roles',this)">
+    <span class="ico">🔐</span><span class="lbl">Rôles & Permissions</span>
+  </div>
+  <div class="nav-item" onclick="goPage('logs',this)">
+    <span class="ico">📜</span><span class="lbl">Journal d'activité</span>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="admin-user">
+      <div class="admin-avatar">AD</div>
+      <div>
+        <div class="admin-name">Admin TARGA</div>
+        <div class="admin-role">Administrateur</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="showToast('Déconnexion…')">✕ Se déconnecter</button>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════ -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Vue d'ensemble</div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbar-date"></span>
+      <button class="btn-add" id="btn-add-main" onclick="openModal('Nouvel élément')">+ Ajouter</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════════════════════════════════
+         PAGE DASHBOARD
+    ════════════════════════════════ -->
+    <div id="page-dashboard" class="page-panel active">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-ico">👥</div>
+          <div class="stat-val">247</div>
+          <div class="stat-lbl">Utilisateurs inscrits</div>
+          <div class="stat-delta">↑ +18 ce mois</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-ico">🧭</div>
+          <div class="stat-val">8</div>
+          <div class="stat-lbl">Guides certifiés</div>
+          <div class="stat-delta">↑ +1 en attente</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-ico">📋</div>
+          <div class="stat-val">1 284</div>
+          <div class="stat-lbl">Réservations totales</div>
+          <div class="stat-delta">↑ +43 cette semaine</div>
+        </div>
+        <div class="stat-card olive">
+          <div class="stat-ico">⭐</div>
+          <div class="stat-val">4.7</div>
+          <div class="stat-lbl">Note moyenne guides</div>
+          <div class="stat-delta">→ Stable</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="chart-title">Réservations par destination</div>
+          <div class="bar-chart">
+            <div class="bar-row"><div class="bar-lbl">Marrakech</div><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--terracotta)"></div></div><div class="bar-val">347</div></div>
+            <div class="bar-row"><div class="bar-lbl">Merzouga</div><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--gold)"></div></div><div class="bar-val">284</div></div>
+            <div class="bar-row"><div class="bar-lbl">Fès</div><div class="bar-track"><div class="bar-fill" style="width:60%;background:var(--teal)"></div></div><div class="bar-val">237</div></div>
+            <div class="bar-row"><div class="bar-lbl">Chefchaouen</div><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--olive)"></div></div><div class="bar-val">178</div></div>
+            <div class="bar-row"><div class="bar-lbl">Essaouira</div><div class="bar-track"><div class="bar-fill" style="width:34%;background:var(--purple)"></div></div><div class="bar-val">134</div></div>
+            <div class="bar-row"><div class="bar-lbl">Agadir</div><div class="bar-track"><div class="bar-fill" style="width:26%;background:#C0622A"></div></div><div class="bar-val">104</div></div>
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">Répartition des rôles</div>
+          <svg viewBox="0 0 160 160" style="width:140px;display:block;margin:0 auto;">
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#B5451B" stroke-width="22" stroke-dasharray="304 39" stroke-dashoffset="0"/>
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#D4A843" stroke-width="22" stroke-dasharray="26 317" stroke-dashoffset="-304"/>
+            <circle cx="80" cy="80" r="60" fill="none" stroke="#7B3A7B" stroke-width="22" stroke-dasharray="13 330" stroke-dashoffset="-330"/>
+            <text x="80" y="76" text-anchor="middle" font-size="18" font-weight="700" fill="#2B1206" font-family="Georgia">247</text>
+            <text x="80" y="92" text-anchor="middle" font-size="9" fill="#888" font-family="Georgia">total</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="donut-item"><div class="donut-dot" style="background:var(--terracotta)"></div><span>Visiteurs — 236 (95.5%)</span></div>
+            <div class="donut-item"><div class="donut-dot" style="background:var(--gold)"></div><span>Guides — 8 (3.2%)</span></div>
+            <div class="donut-item"><div class="donut-dot" style="background:var(--purple)"></div><span>Admins — 3 (1.2%)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-hd"><h2>Activité récente</h2></div>
+      <div class="zellij-line"></div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-ico" style="background:rgba(46,107,107,0.1)">🧭</div>
+          <div class="tl-body">
+            <div class="tl-text"><strong>Brahim Ouhssain</strong> a mis à jour son profil guide — nouvelles langues ajoutées.</div>
+            <div class="tl-time">Il y a 12 minutes</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-ico" style="background:rgba(212,168,67,0.1)">📋</div>
+          <div class="tl-body">
+            <div class="tl-text"><strong>Sofia Alami</strong> a effectué une réservation pour <em>Bivouac Erg Chebbi</em> — 2 personnes.</div>
+            <div class="tl-time">Il y a 38 minutes</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-ico" style="background:rgba(181,69,27,0.1)">⭐</div>
+          <div class="tl-body">
+            <div class="tl-text"><strong>Karim Mansouri</strong> a laissé un avis 5 étoiles pour <em>Youssef El Fassi</em>.</div>
+            <div class="tl-time">Il y a 1 heure</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-ico" style="background:rgba(123,58,123,0.1)">👤</div>
+          <div class="tl-body">
+            <div class="tl-text"><strong>Nouveau compte</strong> créé — Laura Bertin, visiteur (Essaouira).</div>
+            <div class="tl-time">Il y a 2 heures</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-ico" style="background:rgba(107,123,58,0.1)">✅</div>
+          <div class="tl-body">
+            <div class="tl-text">Réservation <strong>#1284</strong> confirmée — <em>Ascension du Toubkal</em>, 3 personnes.</div>
+            <div class="tl-time">Il y a 3 heures</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         PAGE UTILISATEURS
+    ════════════════════════════════ -->
+    <div id="page-utilisateurs" class="page-panel">
+      <div class="sec-hd"><h2>Gestion des Utilisateurs</h2></div>
+      <div class="zellij-line"></div>
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <input class="tbl-search" id="searchUser" placeholder="Rechercher par nom, email…" oninput="filterTable('tblUsers','searchUser')"/>
+          <button class="tbl-filter on" onclick="filterRole(this,'all')">Tous</button>
+          <button class="tbl-filter" onclick="filterRole(this,'visiteur')">Visiteurs</button>
+          <button class="tbl-filter" onclick="filterRole(this,'guide')">Guides</button>
+          <button class="tbl-filter" onclick="filterRole(this,'admin')">Admins</button>
+        </div>
+        <table id="tblUsers">
+          <thead>
+            <tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Inscription</th><th>Statut</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr data-role="visiteur"><td><strong>Sofia Alami</strong></td><td>sofia.alami@email.ma</td><td><span class="badge badge-visiteur">Visiteur</span></td><td>12 Jan 2025</td><td><span class="badge badge-actif">Actif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Sofia Alami')">Modifier</button><button class="btn-act btn-promote" onclick="promoteUser('Sofia Alami')">→ Guide</button><button class="btn-act btn-del" onclick="confirmDelete('Sofia Alami')">Sup.</button></div></td></tr>
+            <tr data-role="visiteur"><td><strong>Karim Mansouri</strong></td><td>k.mansouri@email.ma</td><td><span class="badge badge-visiteur">Visiteur</span></td><td>8 Fév 2025</td><td><span class="badge badge-actif">Actif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Karim Mansouri')">Modifier</button><button class="btn-act btn-promote" onclick="promoteUser('Karim Mansouri')">→ Guide</button><button class="btn-act btn-del" onclick="confirmDelete('Karim Mansouri')">Sup.</button></div></td></tr>
+            <tr data-role="visiteur"><td><strong>Laura Bertin</strong></td><td>laura.bertin@gmail.com</td><td><span class="badge badge-visiteur">Visiteur</span></td><td>27 Avr 2026</td><td><span class="badge badge-actif">Actif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Laura Bertin')">Modifier</button><button class="btn-act btn-promote" onclick="promoteUser('Laura Bertin')">→ Guide</button><button class="btn-act btn-del" onclick="confirmDelete('Laura Bertin')">Sup.</button></div></td></tr>
+            <tr data-role="guide"><td><strong>Youssef El Fassi</strong></td><td>youssef.fassi@targa.ma</td><td><span class="badge badge-guide">Guide</span></td><td>3 Sep 2024</td><td><span class="badge badge-actif">Actif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Youssef El Fassi')">Modifier</button><button class="btn-act btn-del" onclick="confirmDelete('Youssef El Fassi')">Sup.</button></div></td></tr>
+            <tr data-role="guide"><td><strong>Fatima Amrani</strong></td><td>fatima.amrani@targa.ma</td><td><span class="badge badge-guide">Guide</span></td><td>15 Oct 2024</td><td><span class="badge badge-actif">Actif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Fatima Amrani')">Modifier</button><button class="btn-act btn-del" onclick="confirmDelete('Fatima Amrani')">Sup.</button></div></td></tr>
+            <tr data-role="guide"><td><strong>Brahim Ouhssain</strong></td><td>brahim.ouhssain@targa.ma</td><td><span class="badge badge-guide">Guide</span></td><td>20 Nov 2024</td><td><span class="badge badge-actif">Actif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Brahim Ouhssain')">Modifier</button><button class="btn-act btn-del" onclick="confirmDelete('Brahim Ouhssain')">Sup.</button></div></td></tr>
+            <tr data-role="admin"><td><strong>Admin TARGA</strong></td><td>admin@targa.ma</td><td><span class="badge badge-admin">Admin</span></td><td>1 Jan 2024</td><td><span class="badge badge-actif">Actif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Admin')">Modifier</button></div></td></tr>
+            <tr data-role="visiteur"><td><strong>Mehdi Slimani</strong></td><td>m.slimani@hotmail.fr</td><td><span class="badge badge-visiteur">Visiteur</span></td><td>2 Mar 2025</td><td><span class="badge badge-inactif">Inactif</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Mehdi Slimani')">Modifier</button><button class="btn-act btn-promote" onclick="promoteUser('Mehdi Slimani')">→ Guide</button><button class="btn-act btn-del" onclick="confirmDelete('Mehdi Slimani')">Sup.</button></div></td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span>Affichage 1–8 sur 247 utilisateurs</span>
+          <div class="page-btns">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">…</button>
+            <button class="page-btn">31</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         PAGE GUIDES
+    ════════════════════════════════ -->
+    <div id="page-guides" class="page-panel">
+      <div class="sec-hd"><h2>Gestion des Guides</h2><button class="btn-add" onclick="openModal('Nouveau Guide')">+ Nouveau Guide</button></div>
+      <div class="zellij-line"></div>
+      <div class="guides-grid">
+        <div class="guide-admin-card">
+          <div class="guide-card-header"></div>
+          <div class="guide-avatar-a">👳</div>
+          <div class="guide-card-body">
+            <div class="guide-card-name">Youssef El Fassi</div>
+            <div class="guide-card-city">📍 Fès · Guide certifié depuis 2020</div>
+            <div class="guide-card-stats">
+              <div class="gstat"><div class="gstat-val">★ 4.9</div><div class="gstat-lbl">Note</div></div>
+              <div class="gstat"><div class="gstat-val">124</div><div class="gstat-lbl">Avis</div></div>
+              <div class="gstat"><div class="gstat-val">AR FR EN</div><div class="gstat-lbl">Langues</div></div>
+            </div>
+            <div class="guide-card-acts">
+              <span class="badge badge-certifie">✓ Certifié</span>
+              <span class="badge badge-actif">Actif</span>
+            </div>
+            <div class="act-btns" style="margin-top:0.8rem;">
+              <button class="btn-act btn-edit" onclick="openModal('Modifier Youssef El Fassi')" style="flex:1">Modifier</button>
+              <button class="btn-act btn-del" onclick="confirmDelete('Youssef El Fassi')">Retirer</button>
+            </div>
+          </div>
+        </div>
+        <div class="guide-admin-card">
+          <div class="guide-card-header"></div>
+          <div class="guide-avatar-a">🧕</div>
+          <div class="guide-card-body">
+            <div class="guide-card-name">Fatima Amrani</div>
+            <div class="guide-card-city">📍 Marrakech · Guide certifiée depuis 2021</div>
+            <div class="guide-card-stats">
+              <div class="gstat"><div class="gstat-val">★ 4.9</div><div class="gstat-lbl">Note</div></div>
+              <div class="gstat"><div class="gstat-val">89</div><div class="gstat-lbl">Avis</div></div>
+              <div class="gstat"><div class="gstat-val">AR FR ES IT</div><div class="gstat-lbl">Langues</div></div>
+            </div>
+            <div class="guide-card-acts">
+              <span class="badge badge-certifie">✓ Certifiée</span>
+              <span class="badge badge-actif">Active</span>
+            </div>
+            <div class="act-btns" style="margin-top:0.8rem;">
+              <button class="btn-act btn-edit" onclick="openModal('Modifier Fatima Amrani')" style="flex:1">Modifier</button>
+              <button class="btn-act btn-del" onclick="confirmDelete('Fatima Amrani')">Retirer</button>
+            </div>
+          </div>
+        </div>
+        <div class="guide-admin-card">
+          <div class="guide-card-header"></div>
+          <div class="guide-avatar-a">🧔</div>
+          <div class="guide-card-body">
+            <div class="guide-card-name">Hassan Ait Bella</div>
+            <div class="guide-card-city">📍 Ouarzazate · Guide certifié depuis 2018</div>
+            <div class="guide-card-stats">
+              <div class="gstat"><div class="gstat-val">★ 5.0</div><div class="gstat-lbl">Note</div></div>
+              <div class="gstat"><div class="gstat-val">201</div><div class="gstat-lbl">Avis</div></div>
+              <div class="gstat"><div class="gstat-val">AR FR EN TZ</div><div class="gstat-lbl">Langues</div></div>
+            </div>
+            <div class="guide-card-acts">
+              <span class="badge badge-certifie">✓ Certifié</span>
+              <span class="badge badge-actif">Actif</span>
+            </div>
+            <div class="act-btns" style="margin-top:0.8rem;">
+              <button class="btn-act btn-edit" onclick="openModal('Modifier Hassan Ait Bella')" style="flex:1">Modifier</button>
+              <button class="btn-act btn-del" onclick="confirmDelete('Hassan Ait Bella')">Retirer</button>
+            </div>
+          </div>
+        </div>
+        <!-- Candidature en attente -->
+        <div class="guide-admin-card" style="border:2px dashed rgba(212,168,67,0.5);">
+          <div class="guide-card-header" style="background:linear-gradient(135deg,var(--gold),var(--gold-light));"></div>
+          <div class="guide-avatar-a">👩‍💼</div>
+          <div class="guide-card-body">
+            <div class="guide-card-name">Khadija Bennis</div>
+            <div class="guide-card-city">📍 Casablanca · Candidature en attente</div>
+            <div class="guide-card-stats">
+              <div class="gstat"><div class="gstat-val">—</div><div class="gstat-lbl">Note</div></div>
+              <div class="gstat"><div class="gstat-val">0</div><div class="gstat-lbl">Avis</div></div>
+              <div class="gstat"><div class="gstat-val">AR FR EN</div><div class="gstat-lbl">Langues</div></div>
+            </div>
+            <div class="guide-card-acts">
+              <span class="badge badge-attente">⏳ En attente</span>
+            </div>
+            <div class="act-btns" style="margin-top:0.8rem;">
+              <button class="btn-act btn-certify" onclick="certifyGuide('Khadija Bennis')" style="flex:1">✓ Valider</button>
+              <button class="btn-act btn-del" onclick="confirmDelete('Khadija Bennis')">Refuser</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         PAGE RÉSERVATIONS
+    ════════════════════════════════ -->
+    <div id="page-reservations" class="page-panel">
+      <div class="sec-hd"><h2>Réservations</h2></div>
+      <div class="zellij-line"></div>
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <input class="tbl-search" id="searchRes" placeholder="Rechercher par client, activité…" oninput="filterTable('tblRes','searchRes')"/>
+          <button class="tbl-filter on" onclick="filterStatus(this,'all')">Toutes</button>
+          <button class="tbl-filter" onclick="filterStatus(this,'attente')">En attente</button>
+          <button class="tbl-filter" onclick="filterStatus(this,'confirmé')">Confirmées</button>
+          <button class="tbl-filter" onclick="filterStatus(this,'annulé')">Annulées</button>
+        </div>
+        <table id="tblRes">
+          <thead>
+            <tr><th>#</th><th>Client</th><th>Activité</th><th>Date</th><th>Personnes</th><th>Montant</th><th>Statut</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr data-statut="attente"><td><strong>#1284</strong></td><td>Sofia Alami</td><td>Bivouac Erg Chebbi</td><td>15 Mai 2026</td><td>2</td><td>2 400 MAD</td><td><span class="badge badge-attente">En attente</span></td><td><div class="act-btns"><button class="btn-act btn-certify" onclick="confirmRes(1284)">✓</button><button class="btn-act btn-del" onclick="cancelRes(1284)">✕</button></div></td></tr>
+            <tr data-statut="confirmé"><td><strong>#1283</strong></td><td>Karim Mansouri</td><td>Médina de Fès el-Bali</td><td>10 Mai 2026</td><td>1</td><td>400 MAD</td><td><span class="badge badge-confirme">Confirmée</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Réservation #1283')">Détails</button></div></td></tr>
+            <tr data-statut="confirmé"><td><strong>#1282</strong></td><td>Laura Bertin</td><td>La Ville Bleue Chefchaouen</td><td>8 Mai 2026</td><td>3</td><td>600 MAD</td><td><span class="badge badge-confirme">Confirmée</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Réservation #1282')">Détails</button></div></td></tr>
+            <tr data-statut="attente"><td><strong>#1281</strong></td><td>Mehdi Slimani</td><td>Ascension du Toubkal</td><td>20 Juin 2026</td><td>2</td><td>1 700 MAD</td><td><span class="badge badge-attente">En attente</span></td><td><div class="act-btns"><button class="btn-act btn-certify" onclick="confirmRes(1281)">✓</button><button class="btn-act btn-del" onclick="cancelRes(1281)">✕</button></div></td></tr>
+            <tr data-statut="annulé"><td><strong>#1280</strong></td><td>Omar Tazi</td><td>Surf à Taghazout</td><td>1 Mai 2026</td><td>1</td><td>650 MAD</td><td><span class="badge badge-annule">Annulée</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Réservation #1280')">Détails</button></div></td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span>Affichage 1–5 sur 1 284 réservations</span>
+          <div class="page-btns">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">…</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         PAGE AVIS
+    ════════════════════════════════ -->
+    <div id="page-avis" class="page-panel">
+      <div class="sec-hd"><h2>Avis & Évaluations</h2></div>
+      <div class="zellij-line"></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Auteur</th><th>Guide évalué</th><th>Note</th><th>Commentaire</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>Sofia Alami</td><td>Brahim Ouhssain</td><td style="color:var(--gold)">★★★★★</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.78rem">Le bivouac dans l'Erg Chebbi est une expérience qui change une vie…</td><td>12 Avr 2026</td><td><div class="act-btns"><button class="btn-act btn-certify">✓ Valider</button><button class="btn-act btn-del">Masquer</button></div></td></tr>
+            <tr><td>Karim Mansouri</td><td>Youssef El Fassi</td><td style="color:var(--gold)">★★★★★</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.78rem">Youssef nous a fait vivre Fès el-Bali comme nulle part ailleurs…</td><td>15 Mar 2026</td><td><div class="act-btns"><button class="btn-act btn-certify">✓ Valider</button><button class="btn-act btn-del">Masquer</button></div></td></tr>
+            <tr><td>Laura Bertin</td><td>Omar Benali</td><td style="color:var(--gold)">★★★★★</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.78rem">Chefchaouen est un rêve éveillé. Le guide Omar nous a montré…</td><td>2 Fév 2026</td><td><div class="act-btns"><button class="btn-act btn-certify">✓ Valider</button><button class="btn-act btn-del">Masquer</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         PAGE RÔLES
+    ════════════════════════════════ -->
+    <div id="page-roles" class="page-panel">
+      <div class="sec-hd"><h2>Rôles & Permissions</h2></div>
+      <div class="zellij-line"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;">
+        <!-- Visiteur -->
+        <div style="background:white;border:1px solid var(--border);border-top:3px solid var(--teal);border-radius:3px;padding:1.4rem;">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">
+            <span style="font-size:1.5rem">👤</span>
+            <div>
+              <div style="font-family:'Cinzel',serif;font-size:0.82rem;font-weight:700;color:var(--teal)">Visiteur</div>
+              <div style="font-size:0.68rem;color:var(--text-muted)">236 utilisateurs</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;font-size:0.78rem;">
+            <div>✅ Consulter la carte</div>
+            <div>✅ Voir les activités</div>
+            <div>✅ Voir les guides</div>
+            <div>✅ Laisser un avis (identité)</div>
+            <div>🔒 Réserver une activité (connexion)</div>
+            <div>🔒 Planifier un itinéraire IA</div>
+            <div>❌ Gérer des activités</div>
+            <div>❌ Accès administration</div>
+          </div>
+        </div>
+        <!-- Guide -->
+        <div style="background:white;border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:3px;padding:1.4rem;">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">
+            <span style="font-size:1.5rem">🧭</span>
+            <div>
+              <div style="font-family:'Cinzel',serif;font-size:0.82rem;font-weight:700;color:#8B6500">Guide</div>
+              <div style="font-size:0.68rem;color:var(--text-muted)">8 utilisateurs</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;font-size:0.78rem;">
+            <div>✅ Toutes les permissions Visiteur</div>
+            <div>✅ Gérer son profil guide</div>
+            <div>✅ Créer/modifier ses activités</div>
+            <div>✅ Consulter ses réservations</div>
+            <div>✅ Répondre aux avis</div>
+            <div>✅ Gérer ses disponibilités</div>
+            <div>❌ Gérer d'autres utilisateurs</div>
+            <div>❌ Accès administration</div>
+          </div>
+          <button class="btn-act btn-edit" style="margin-top:1rem;width:100%;" onclick="openModal('Modifier permissions Guide')">Modifier permissions</button>
+        </div>
+        <!-- Admin -->
+        <div style="background:white;border:1px solid var(--border);border-top:3px solid var(--purple);border-radius:3px;padding:1.4rem;">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">
+            <span style="font-size:1.5rem">🔐</span>
+            <div>
+              <div style="font-family:'Cinzel',serif;font-size:0.82rem;font-weight:700;color:var(--purple)">Admin</div>
+              <div style="font-size:0.68rem;color:var(--text-muted)">3 utilisateurs</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;font-size:0.78rem;">
+            <div>✅ Toutes les permissions Guide</div>
+            <div>✅ Gérer tous les utilisateurs</div>
+            <div>✅ Valider les guides</div>
+            <div>✅ Modérer les avis</div>
+            <div>✅ Gérer les rôles</div>
+            <div>✅ Accès complet administration</div>
+            <div>✅ Consulter les logs</div>
+            <div>✅ Configuration système</div>
+          </div>
+          <button class="btn-act btn-promote" style="margin-top:1rem;width:100%;" onclick="openModal('Modifier permissions Admin')">Modifier permissions</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         PAGE ACTIVITÉS
+    ════════════════════════════════ -->
+    <div id="page-activites" class="page-panel">
+      <div class="sec-hd"><h2>Gestion des Activités</h2><button class="btn-add" onclick="openModal('Nouvelle Activité')">+ Nouvelle activité</button></div>
+      <div class="zellij-line"></div>
+      <div class="tbl-wrap">
+        <div class="tbl-toolbar">
+          <input class="tbl-search" id="searchAct" placeholder="Rechercher une activité…" oninput="filterTable('tblAct','searchAct')"/>
+        </div>
+        <table id="tblAct">
+          <thead><tr><th>Titre</th><th>Destination</th><th>Guide</th><th>Prix</th><th>Capacité</th><th>Dispo</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Bivouac Erg Chebbi</strong></td><td>Merzouga</td><td>Brahim Ouhssain</td><td>1 200 MAD</td><td>10</td><td><span class="badge badge-actif">Disponible</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Bivouac Erg Chebbi')">Modifier</button><button class="btn-act btn-del" onclick="confirmDelete('Bivouac Erg Chebbi')">Sup.</button></div></td></tr>
+            <tr><td><strong>Médina de Fès el-Bali</strong></td><td>Fès</td><td>Youssef El Fassi</td><td>400 MAD</td><td>12</td><td><span class="badge badge-actif">Disponible</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Médina de Fès')">Modifier</button><button class="btn-act btn-del" onclick="confirmDelete('Médina de Fès')">Sup.</button></div></td></tr>
+            <tr><td><strong>Ascension du Toubkal</strong></td><td>Haut Atlas</td><td>Non assigné</td><td>850 MAD</td><td>8</td><td><span class="badge badge-inactif">Complet</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Toubkal')">Modifier</button><button class="btn-act btn-del" onclick="confirmDelete('Toubkal')">Sup.</button></div></td></tr>
+            <tr><td><strong>Surf à Taghazout</strong></td><td>Agadir</td><td>Hassan Ait Bella</td><td>650 MAD</td><td>15</td><td><span class="badge badge-actif">Disponible</span></td><td><div class="act-btns"><button class="btn-act btn-edit" onclick="openModal('Modifier Surf Taghazout')">Modifier</button><button class="btn-act btn-del" onclick="confirmDelete('Surf Taghazout')">Sup.</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         PAGE LOGS
+    ════════════════════════════════ -->
+    <div id="page-logs" class="page-panel">
+      <div class="sec-hd"><h2>Journal d'Activité</h2></div>
+      <div class="zellij-line"></div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-ico" style="background:rgba(123,58,123,0.1)">🔐</div><div class="tl-body"><div class="tl-text"><strong>Admin</strong> a modifié le rôle de <strong>Khadija Bennis</strong> : visiteur → guide</div><div class="tl-time">Aujourd'hui 09:14</div></div></div>
+        <div class="tl-item"><div class="tl-ico" style="background:rgba(107,123,58,0.1)">✅</div><div class="tl-body"><div class="tl-text"><strong>Système</strong> — Réservation #1284 confirmée automatiquement après paiement</div><div class="tl-time">Aujourd'hui 08:52</div></div></div>
+        <div class="tl-item"><div class="tl-ico" style="background:rgba(181,69,27,0.1)">🗑️</div><div class="tl-body"><div class="tl-text"><strong>Admin</strong> a supprimé l'avis #892 pour contenu inapproprié</div><div class="tl-time">Hier 17:30</div></div></div>
+        <div class="tl-item"><div class="tl-ico" style="background:rgba(46,107,107,0.1)">👤</div><div class="tl-body"><div class="tl-text"><strong>Système</strong> — Nouvel utilisateur inscrit : Laura Bertin (laura.bertin@gmail.com)</div><div class="tl-time">Hier 14:22</div></div></div>
+        <div class="tl-item"><div class="tl-ico" style="background:rgba(212,168,67,0.1)">✏️</div><div class="tl-body"><div class="tl-text"><strong>Fatima Amrani</strong> a modifié son activité "Atelier Cuisine dans un Riad" — prix mis à jour</div><div class="tl-time">Hier 11:05</div></div></div>
+        <div class="tl-item"><div class="tl-ico" style="background:rgba(181,69,27,0.1)">🔐</div><div class="tl-body"><div class="tl-text"><strong>Admin</strong> s'est connecté depuis 196.200.x.x (Casablanca, MA)</div><div class="tl-time">Hier 09:00</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end main -->
+
+<!-- ═══ MODAL ═══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Titre</div>
+    <div class="form-row">
+      <div class="form-grp"><label class="form-lbl">Prénom</label><input class="form-inp" type="text" placeholder="Prénom"/></div>
+      <div class="form-grp"><label class="form-lbl">Nom</label><input class="form-inp" type="text" placeholder="Nom"/></div>
+    </div>
+    <div class="form-row full">
+      <div class="form-grp"><label class="form-lbl">Email</label><input class="form-inp" type="email" placeholder="email@exemple.com"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-grp"><label class="form-lbl">Rôle</label>
+        <select class="form-sel">
+          <option>Visiteur</option><option>Guide</option><option>Admin</option>
+        </select>
+      </div>
+      <div class="form-grp"><label class="form-lbl">Statut</label>
+        <select class="form-sel">
+          <option>Actif</option><option>Inactif</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveModal()">Enregistrer ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── NAVIGATION ──
+const PAGES_ADMIN = ['dashboard','utilisateurs','guides','reservations','avis','roles','activites','logs'];
+const PAGE_TITLES = {
+  dashboard:'Vue d\'ensemble', utilisateurs:'Gestion des Utilisateurs', guides:'Gestion des Guides',
+  reservations:'Réservations', avis:'Avis & Évaluations', roles:'Rôles & Permissions',
+  activites:'Gestion des Activités', logs:'Journal d\'Activité'
+};
+
+function goPage(id, el) {
+  PAGES_ADMIN.forEach(p => {
+    const pg = document.getElementById('page-'+p);
+    if(pg) pg.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[id] || id;
+}
+
+// ── DATE ──
+const now = new Date();
+const opts = {weekday:'long',year:'numeric',month:'long',day:'numeric'};
+document.getElementById('topbar-date').textContent = now.toLocaleDateString('fr-FR', opts);
+
+// ── MODAL ──
+function openModal(title) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function closeModalOnBg(e) {
+  if(e.target === document.getElementById('modalOverlay')) closeModal();
+}
+function saveModal() {
+  closeModal();
+  showToast('✓ Enregistré avec succès !');
+}
+
+// ── ACTIONS ──
+function promoteUser(name) {
+  if(confirm(`Promouvoir ${name} au rôle de Guide ?`)) showToast(`✓ ${name} est maintenant Guide.`);
+}
+function confirmDelete(name) {
+  if(confirm(`Supprimer ${name} ? Cette action est irréversible.`)) showToast(`✓ ${name} a été supprimé.`);
+}
+function certifyGuide(name) {
+  showToast(`✓ ${name} est maintenant certifié(e) !`);
+}
+function confirmRes(id) {
+  showToast(`✓ Réservation #${id} confirmée.`);
+}
+function cancelRes(id) {
+  if(confirm(`Annuler la réservation #${id} ?`)) showToast(`✓ Réservation #${id} annulée.`);
+}
+
+// ── FILTER TABLE ──
+function filterTable(tblId, searchId) {
+  const q = document.getElementById(searchId).value.toLowerCase();
+  const rows = document.querySelectorAll('#'+tblId+' tbody tr');
+  rows.forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+function filterRole(btn, role) {
+  document.querySelectorAll('.tbl-filter').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const rows = document.querySelectorAll('#tblUsers tbody tr');
+  rows.forEach(r => {
+    r.style.display = (role==='all' || r.dataset.role===role) ? '' : 'none';
+  });
+}
+function filterStatus(btn, status) {
+  document.querySelectorAll('.tbl-filter').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const rows = document.querySelectorAll('#tblRes tbody tr');
+  rows.forEach(r => {
+    r.style.display = (status==='all' || r.dataset.statut===status) ? '' : 'none';
+  });
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+</script>
+</body>
+</html>
