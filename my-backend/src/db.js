@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import bcrypt from 'bcryptjs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -252,11 +253,93 @@ if (destCount.count === 0) {
     { auteur_prenom: 'Sofia', auteur_nom: 'Alami', commentaire: 'Le bivouac dans l\'Erg Chebbi est une expérience qui change une vie. La nuit sous les étoiles du Sahara, la musique gnawa au feu de bois… Je ne peux pas trouver les mots. TARGA m\'a orientée vers le guide parfait.', destination: 'Merzouga' },
     { auteur_prenom: 'Karim', auteur_nom: 'Mansouri', commentaire: 'Youssef El Fassi nous a fait vivre Fès el-Bali comme nulle part ailleurs. Il nous a emmené chez des artisans que les touristes ordinaires ne voient jamais. La Madrasa Bou Inania au coucher du soleil — magique.', destination: 'Fès' },
     { auteur_prenom: 'Laura', auteur_nom: 'Bertin', commentaire: 'Chefchaouen est un rêve éveillé. Le guide Omar nous a montré les ruelles secrètes que personne ne connaît et nous a invités à boire un thé chez des amis locaux. Expérience authentique et mémorable.', destination: 'Chefchaouen' },
+    { auteur_prenom: 'Thomas', auteur_nom: 'Leroy', commentaire: 'Le surf à Taghazout avec TARGA était incroyable ! Les vagues étaient parfaites et le guide local connaissait les meilleurs spots. Je recommande à 100%, je reviendrai l\'année prochaine.', destination: 'Agadir' },
+    { auteur_prenom: 'Aïcha', auteur_nom: 'Benkirane', commentaire: 'L\'atelier cuisine à Marrakech était sublime. Nous avons appris à faire la pastilla et le tajine comme ma grand-mère. Le chef était passionné et patient. Une expérience culturelle autant que gustative.', destination: 'Marrakech' },
+    { auteur_prenom: 'Pierre', auteur_nom: 'Moreau', commentaire: 'L\'ascension du Toubkal restera gravée dans ma mémoire. Le guide Brahim était incroyablement professionnel et motivant. Le lever du soleil à 4167 m — indescriptible.', destination: 'Haut Atlas' },
+    { auteur_prenom: 'Nadia', auteur_nom: 'Fassi', commentaire: 'Le hammam royal à Fès était divin. Pure détente, soins traditionnels à l\'huile d\'argan, le tout dans un cadre historique magnifiquement restauré. Un voyage sensoriel inoubliable.', destination: 'Fès' },
+    { auteur_prenom: 'Julien', auteur_nom: 'Dupont', commentaire: 'Les gorges du Todra pour l\'escalade, c\'est le paradis ! Les voies sont magnifiques, le canyon grandiose. Merci à TARGA pour l\'organisation au top et le guide passionné.', destination: 'Vallée du Dadès' },
+    { auteur_prenom: 'Fatima', auteur_nom: 'Zahra', commentaire: 'La visite d\'Aït Benhaddou au coucher du soleil était tout simplement magique. Le ksar prend des teintes dorées incroyables. Le guide Hassan nous a raconté l\'histoire avec une passion contagieuse.', destination: 'Ouarzazate' },
+    { auteur_prenom: 'Claire', auteur_nom: 'Petit', commentaire: 'Essaouira est un bijou. La culture gnawa m\'a fascinée, les ruelles bleues et blanches sont photogéniques à chaque coin. Le vent est permanent mais ça fait partie du charme !', destination: 'Essaouira' },
+    { auteur_prenom: 'Mehdi', auteur_nom: 'Ouazzani', commentaire: 'Le quad dans le Sahara était une aventure de folie ! Les dunes immenses à perte de vue, le coucher du soleil orange et rouge. Nos guides étaient super sympas et professionnels.', destination: 'Merzouga' },
+    { auteur_prenom: 'Sarah', auteur_nom: 'Cohen', commentaire: 'La médina de Marrakech est un véritable labyrinthe magique. Grâce au guide, nous avons découvert des endroits cachés incroyables. Mention spéciale pour le Jardin Majorelle — un oasis de paix.', destination: 'Marrakech' },
+    { auteur_prenom: 'Youssef', auteur_nom: 'Idrissi', commentaire: 'Le kitesurf à Essaouira était sensationnel ! Le vent est parfait, les moniteurs qualifiés, et l\'ambiance dans la ville est géniale. Je recommande la période mai-juin.', destination: 'Essaouira' },
+    { auteur_prenom: 'Marie', auteur_nom: 'Laurent', commentaire: 'Tanger est magnifique ! Le Cap Spartel et les Grottes d\'Hercule sont à voir absolument. Le guide Khalid connaît des anecdotes passionnantes sur la Beat Generation.', destination: 'Tanger' },
+    { auteur_prenom: 'Rachid', auteur_nom: 'El Ouafi', commentaire: 'Circuit gastronomique incroyable à Marrakech. De la place Jemaa el-Fna aux riads cachés, chaque étape était une explosion de saveurs. Un grand merci à TARGA pour cette expérience.', destination: 'Marrakech' },
+    { auteur_prenom: 'Camille', auteur_nom: 'Roux', commentaire: 'La nuit à Erg Chebbi est l\'une des plus belles nuits de ma vie. Le ciel étoilé dans le désert, le dîner berbère traditionnel, la musique autour du feu… Un moment suspendu hors du temps.', destination: 'Merzouga' },
+    { auteur_prenom: 'Hassan', auteur_nom: 'Bennis', commentaire: 'Rabat est une ville pleine de surprises. La Kasbah des Oudaias est magnifique, le mausolée Mohammed V impressionnant. Un beau mélange d\'histoire et de modernité.', destination: 'Rabat' },
+    { auteur_prenom: 'Emma', auteur_nom: 'Schmidt', commentaire: 'La Vallée des Roses en mai est un spectacle pour les sens. Les champs infinis de roses de Damas, les coopératives de femmes qui distillent l\'eau de rose. Authentique et émouvant.', destination: 'Vallée du Dadès' },
+    { auteur_prenom: 'Omar', auteur_nom: 'Ghali', commentaire: 'L\'immersion berbère à Imlil était exactement ce que je cherchais. Partager un repas avec une famille locale, comprendre leur quotidien, leurs traditions. Le tourisme responsable à son meilleur.', destination: 'Haut Atlas' },
+    { auteur_prenom: 'Sophie', auteur_nom: 'Bernard', commentaire: 'La visite des studios de Ouarzazate est passionnante même pour qui n\'est pas cinéphile. Voir les décors de Gladiator et Game of Thrones en vrai, c\'est impressionnant. Notre guide était un puits de science.', destination: 'Ouarzazate' },
+    { auteur_prenom: 'Kenza', auteur_nom: 'Mouline', commentaire: 'La coopérative d\'argan à Essaouira était enrichissante. Les femmes expliquent leur travail avec fierté. L\'huile d\'argan bio que j\'ai rapportée est excellente. Belle initiative solidaire.', destination: 'Essaouira' },
+    { auteur_prenom: 'Alexandre', auteur_nom: 'Caron', commentaire: 'Forêt de cèdres de Talassemtane — un véritable bol d\'air pur. Les cèdres centenaires imposants, les sources d\'eau cristalline. Le guide Omar connaît la région comme sa poche.', destination: 'Chefchaouen' },
+    { auteur_prenom: 'Nour', auteur_nom: 'Eddine', commentaire: 'Le musée Yves Saint Laurent et le Jardin Majorelle sont un must à Marrakech. Même si vous n\'êtes pas mode, l\'histoire du lieu et le bleu Majorelle valent le détour.', destination: 'Marrakech' },
+    { auteur_prenom: 'Isabelle', auteur_nom: 'Garnier', commentaire: 'L\'atelier de poterie à Fès était très amusant ! Le maître artisan nous a appris les bases du tournage. Repartir avec son propre bol fait main est une fierté. Super activité en famille.', destination: 'Fès' },
+    { auteur_prenom: 'Adil', auteur_nom: 'Chraibi', commentaire: 'Wind surf à Essaouira — les conditions sont idéales pour progresser. Les moniteurs sont patients et pédagogues. L\'ambiance dans la ville est décontractée et cosmopolite.', destination: 'Essaouira' },
   ];
 
   for (const e of evaluations) {
     insertEval.run(e);
   }
+
+  // --- seed users ---
+  const hash = bcrypt.hashSync('password123', 10);
+  const insertUser = db.prepare('INSERT INTO users (prenom, nom, email, password, role) VALUES (?,?,?,?,?)');
+  const users = [
+    ['Admin','TARGA','admin@targa.ma',hash,'admin'],
+    ['Sophie','Martin','sophie@test.ma',hash,'user'],
+    ['Marc','Dubois','marc@test.ma',hash,'user'],
+    ['Leila','Benali','leila@test.ma',hash,'user'],
+    ['Amine','Tazi','amine@test.ma',hash,'user'],
+    ['Yasmine','El Fassi','yasmine@test.ma',hash,'user'],
+  ];
+  for (const u of users) { insertUser.run(...u); }
+
+  // --- seed guide_ratings ---
+  const insertGR = db.prepare('INSERT INTO guide_ratings (user_id, guide_id, rating) VALUES (?,?,?)');
+  const guideRatings = [
+    [2,1,5],[3,1,4],[4,1,5],[5,1,5],[6,1,4],
+    [2,2,5],[3,2,5],[4,2,4],[5,2,5],
+    [2,3,5],[3,3,5],[4,3,5],
+    [2,4,4],[3,4,5],[4,4,4],
+    [2,5,5],[3,5,5],[5,5,4],
+    [2,6,4],[3,6,4],
+    [2,7,5],[3,7,5],[4,7,5],[5,7,5],[6,7,5],
+    [2,8,4],[3,8,5],[4,8,4],
+  ];
+  for (const r of guideRatings) { insertGR.run(...r); }
+
+  // --- seed activity_ratings ---
+  const insertAR = db.prepare('INSERT INTO activity_ratings (user_id, activity_id, rating) VALUES (?,?,?)');
+  const actRatings = [
+    [2,1,5],[3,1,4],[4,1,5],[5,1,5],
+    [2,2,5],[3,2,4],[4,2,5],
+    [2,3,4],[3,3,4],[5,3,5],
+    [2,4,5],[4,4,5],[6,4,4],
+    [2,5,5],[3,5,5],[4,5,5],[5,5,5],
+    [2,6,4],[3,6,4],[5,6,4],
+    [2,8,5],[3,8,5],[4,8,5],[5,8,5],[6,8,5],
+    [2,11,5],[3,11,5],[4,11,5],
+    [2,13,4],[3,13,5],[5,13,5],
+    [2,14,4],[4,14,4],[6,14,4],
+    [2,18,5],[3,18,5],[4,18,5],
+    [2,20,5],[3,20,4],[5,20,5],
+  ];
+  for (const r of actRatings) { insertAR.run(...r); }
+
+  // --- seed reservations ---
+  const insertRes = db.prepare(`INSERT INTO reservations (activity_id, prenom, nom, email, telephone, date_reservation, nombre_personnes, statut, user_id)
+    VALUES (?,?,?,?,?,?,?,?,?)`);
+  const reservations = [
+    [1,'Sophie','Martin','sophie@test.ma','+33612345678','2026-07-15',2,'confirmé',2],
+    [5,'Marc','Dubois','marc@test.ma','+33623456789','2026-07-20',3,'confirmé',3],
+    [8,'Leila','Benali','leila@test.ma','+33634567890','2026-08-05',2,'confirmé',4],
+    [11,'Amine','Tazi','amine@test.ma','+33645678901','2026-07-25',1,'confirmé',5],
+    [13,'Yasmine','El Fassi','yasmine@test.ma','+33656789012','2026-08-12',4,'en_attente',6],
+    [18,'Sophie','Martin','sophie@test.ma','+33612345678','2026-08-20',2,'en_attente',2],
+    [20,'Marc','Dubois','marc@test.ma','+33623456789','2026-09-01',1,'annulé',3],
+    [2,'Leila','Benali','leila@test.ma','+33634567890','2026-07-10',3,'confirmé',4],
+  ];
+  for (const r of reservations) { insertRes.run(...r); }
 }
 
 export default db;

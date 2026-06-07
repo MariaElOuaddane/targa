@@ -24,6 +24,8 @@ export default function ReservationForm({ activityId, onSubmit, onCancel, submit
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validate()) return
+    let userId = null
+    try { userId = JSON.parse(atob(localStorage.getItem('targa_token')?.split('.')[1] || '{}')).id } catch {}
     onSubmit({
       activity_id: activityId,
       prenom: prenom.trim(),
@@ -33,6 +35,7 @@ export default function ReservationForm({ activityId, onSubmit, onCancel, submit
       nombre_personnes: nbPersonnes,
       date_reservation: dateResa,
       message: message.trim() || null,
+      user_id: userId,
     })
   }
 

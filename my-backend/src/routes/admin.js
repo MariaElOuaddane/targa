@@ -92,6 +92,13 @@ router.put('/users/:id', (req, res) => {
 });
 
 router.delete('/users/:id', (req, res) => {
+  db.prepare('DELETE FROM reservations WHERE user_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM evaluations WHERE user_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM guide_ratings WHERE user_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM activity_ratings WHERE user_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM destination_ratings WHERE user_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM review_likes WHERE user_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM guides WHERE user_id = ?').run(req.params.id);
   db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
   res.json({ success: true });
 });
@@ -117,6 +124,7 @@ router.put('/guides/:id', (req, res) => {
 });
 
 router.delete('/guides/:id', (req, res) => {
+  db.prepare('DELETE FROM guide_ratings WHERE guide_id = ?').run(req.params.id);
   db.prepare('DELETE FROM guides WHERE id = ?').run(req.params.id);
   res.json({ success: true });
 });
@@ -142,6 +150,8 @@ router.put('/activities/:id', (req, res) => {
 });
 
 router.delete('/activities/:id', (req, res) => {
+  db.prepare('DELETE FROM activity_ratings WHERE activity_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM reservations WHERE activity_id = ?').run(req.params.id);
   db.prepare('DELETE FROM activities WHERE id = ?').run(req.params.id);
   res.json({ success: true });
 });

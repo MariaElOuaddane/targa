@@ -12,7 +12,8 @@ const PRICE_RANGES = [
 ]
 
 function StarDisplay({ avg, size }) {
-  return <span className="act-stars" style={{fontSize:size||12}}>{'★'.repeat(Math.round(avg))}{'☆'.repeat(5-Math.round(avg))}</span>
+  const n = Math.round(avg || 0)
+  return <span className="act-stars" style={{fontSize:size||12}}>{'★'.repeat(n)}{'☆'.repeat(5-n)}</span>
 }
 
 const CATEGORY_ICON = {

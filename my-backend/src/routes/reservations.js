@@ -9,7 +9,7 @@ router.get('/', (_req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { activity_id, prenom, nom, email, telephone, nombre_personnes, date_reservation, message } = req.body;
+  const { activity_id, prenom, nom, email, telephone, nombre_personnes, date_reservation, message, user_id } = req.body;
 
   if (!activity_id || !prenom || !nom || !email || !telephone || !nombre_personnes || !date_reservation) {
     return res.status(422).json({ error: 'activity_id, prenom, nom, email, telephone, nombre_personnes, and date_reservation are required' });
@@ -21,9 +21,9 @@ router.post('/', (req, res) => {
   }
 
   const result = db.prepare(`
-    INSERT INTO reservations (activity_id, prenom, nom, email, telephone, nombre_personnes, date_reservation, message)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(Number(activity_id), prenom, nom, email, telephone, Number(nombre_personnes), date_reservation, message || null);
+    INSERT INTO reservations (activity_id, prenom, nom, email, telephone, nombre_personnes, date_reservation, message, user_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(Number(activity_id), prenom, nom, email, telephone, Number(nombre_personnes), date_reservation, message || null, user_id || null);
 
   const created = db.prepare('SELECT * FROM reservations WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(created);

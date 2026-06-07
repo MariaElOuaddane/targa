@@ -57,7 +57,7 @@ export default function AvisPage({ goPage, showToast, destSlug }) {
   const sortedReviews = useMemo(() => {
     let list = [...reviews]
     if (destSlug) {
-      list = list.filter(r => r.destination && r.destination.toLowerCase() === destSlug.toLowerCase())
+      list = list.filter(r => r.destination && destSlug.toLowerCase().includes(r.destination.toLowerCase()))
     }
     if (sortBy === 'recent') return list.reverse()
     if (sortBy === 'popular') return list.sort((a, b) => {

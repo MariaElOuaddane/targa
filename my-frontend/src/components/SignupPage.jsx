@@ -14,6 +14,9 @@ export default function SignupPage({ onAuth, goPage, showToast }) {
   const [langues, setLangues] = useState([])
   const [specialite, setSpecialite] = useState('')
   const [description, setDescription] = useState('')
+  const [instagram, setInstagram] = useState('')
+  const [linkedin, setLinkedin] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
   const [destinations, setDestinations] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -44,7 +47,7 @@ export default function SignupPage({ onAuth, goPage, showToast }) {
     try {
       const body = { prenom, nom, email, password, role }
       if (role === 'guide') {
-        Object.assign(body, { ville, telephone, langues: langues.join(','), specialite, description })
+        Object.assign(body, { ville, telephone, langues: langues.join(','), specialite, description, instagram, linkedin, whatsapp })
       }
       const res = await fetch(`${API}/auth/register`, {
         method: 'POST',
@@ -139,6 +142,20 @@ export default function SignupPage({ onAuth, goPage, showToast }) {
               <div className="form-inp-wrap">
                 <label className="form-lbl">Description</label>
                 <textarea className="form-inp" style={{ minHeight:'60px' }} value={description} onChange={e => setDescription(e.target.value)} placeholder="Présentez-vous aux voyageurs..." />
+              </div>
+              <div className="auth-form-row">
+                <div className="form-inp-wrap">
+                  <label className="form-lbl">Instagram</label>
+                  <input className="form-inp" value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="https://instagram.com/..." />
+                </div>
+                <div className="form-inp-wrap">
+                  <label className="form-lbl">LinkedIn</label>
+                  <input className="form-inp" value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/..." />
+                </div>
+                <div className="form-inp-wrap">
+                  <label className="form-lbl">WhatsApp</label>
+                  <input className="form-inp" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} placeholder="+212XXXXXXXXX" />
+                </div>
               </div>
             </>
           )}
