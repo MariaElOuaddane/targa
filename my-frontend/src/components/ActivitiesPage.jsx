@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import ActivityDetail from './ActivityDetail'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 const PRICE_RANGES = [
   { key: 'all', label: 'Tous les prix' },

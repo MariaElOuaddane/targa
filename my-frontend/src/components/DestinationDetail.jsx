@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 const DEST_IMAGES = {
   marrakech: 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?w=1200&q=80',

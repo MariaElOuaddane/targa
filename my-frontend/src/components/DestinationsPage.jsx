@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 const TYPE_ORDER = ['Ville impériale', 'Désert & Sud', 'Côte atlantique', 'Montagnes']
 const TYPE_ICONS = { 'Ville impériale': '🏛️', 'Désert & Sud': '🐪', 'Côte atlantique': '🌊', 'Montagnes': '🏔️' }

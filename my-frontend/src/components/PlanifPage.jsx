@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 const TYPE_LABELS = { imp:'Villes Impériales', des:'Désert & Sud', cot:'Côte Atlantique', mon:'Montagnes' }
 

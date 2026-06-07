@@ -11,8 +11,7 @@ function getAvatarColor(name) {
 }
 
 import { useState, useEffect } from 'react'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 function getToken() {
   return localStorage.getItem('targa_token') || ''

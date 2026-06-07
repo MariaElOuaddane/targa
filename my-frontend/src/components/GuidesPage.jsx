@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import GuideDetail from './GuideDetail'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 export default function GuidesPage({ showToast, destSlug }) {
   const [guides, setGuides] = useState([])

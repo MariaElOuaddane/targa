@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 const AVATAR_COLORS = ['#bc4f00','#88532f','#367588','#2a5a6b','#9cd4ce','#a84400']
 

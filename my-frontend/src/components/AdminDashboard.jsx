@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 const CATEGORY_ICON = {
   Culture:'🏛️', Gastronomie:'🍽️', Nature:'🌿', 'Bien-être':'🧘',

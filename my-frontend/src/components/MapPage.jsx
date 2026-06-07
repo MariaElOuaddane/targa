@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 const TYPE_COLORS = { imp: '#B5451B', des: '#D4A843', cot: '#2E6B6B', mon: '#6B7B3A' }
 const TYPE_LABELS = { imp: 'Ville impériale', des: 'Désert & Sud', cot: 'Côte atlantique', mon: 'Montagnes' }

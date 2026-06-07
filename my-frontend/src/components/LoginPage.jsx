@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-const API = 'http://localhost:3001/api'
+import { API } from '../config.js'
 
 export default function LoginPage({ onAuth, goPage, showToast }) {
   const [email, setEmail] = useState('')
